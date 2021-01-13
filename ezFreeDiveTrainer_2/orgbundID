@@ -28,3 +28,25 @@ com.googleusercontent.apps.183366530677-6pg0g8496n2027g3dkd38ij2vplpk284
 //                present(popoverController, animated: true, completion: nil)
 //            }
 //        }
+
+                let empty = TableData()
+                empty.diaryDate = "\(DateFormatter.localizedString(from: selectedDay ?? Date(), dateStyle: .medium, timeStyle: .medium))"
+                empty.diaryName = ""
+                empty.diaryTextView = ""
+                empty.equipSuit = ""
+                empty.equipMask = ""
+                empty.equipFins = ""
+                empty.equipWeight = ""
+                empty.equipVisibility = ""
+                empty.equipTemperature = ""
+                empty.equipMaxDeep = ""
+                empty.equipDiveTime = ""
+                empty.moodEmoji = ""
+                empty.weatherName = ""
+                empty.weatherLocation = ""
+                empty.weatherTMin = ""
+                empty.weatherTMax = ""
+                empty.locationSiteName = ""
+                empty.locationSiteLat = ""
+                empty.locationSiteLon = ""
+                empty.whitchTable = ""

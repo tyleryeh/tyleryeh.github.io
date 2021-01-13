@@ -59,7 +59,7 @@ extension TrainingModeSelectViewController: UITableViewDataSource {
             cell.modeDescryption.text = "You can set your table just......"
             cell.modeImageView.image = UIImage(named: "footprints")
             
-            SubFunctions.shared.drawGradual(image: cell.modeImageView, arcCenterMustBeSquareViewXY: cell.modeImageView.bounds.width / 2, radius: cell.modeImageView.bounds.width / 2, color1: "#29323c", color2: "#29323c")
+            SubFunctions.shared.drawGradual(image: cell.modeImageView, arcCenterMustBeSquareViewXY: cell.modeImageView.bounds.width / 2, radius: cell.modeImageView.bounds.width / 2, color1: "#29323c", color2: "#29323c", lineWidth: 4.0)
             
             return cell
             

@@ -46,7 +46,7 @@ class DiaryAddNoteViewController: UIViewController {
         image.clipsToBounds = true
         image.image = UIImage(named: name)
         
-        SubFunctions.shared.drawGradual(image: image, arcCenterMustBeSquareViewXY: image.bounds.width / 2, radius: image.bounds.width / 2, color1: "#f9d423", color2: "#ff4e50")
+        SubFunctions.shared.drawGradual(image: image, arcCenterMustBeSquareViewXY: image.bounds.width / 2, radius: image.bounds.width / 2, color1: "#f9d423", color2: "#ff4e50", lineWidth: 4.0)
     }
     
     

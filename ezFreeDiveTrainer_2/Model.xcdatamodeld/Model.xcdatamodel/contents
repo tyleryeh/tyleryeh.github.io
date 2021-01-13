@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="DiaryData" representedClassName=".DiaryData" syncable="YES"/>
     <entity name="TableData" representedClassName=".TableData" syncable="YES">
         <attribute name="breath" optional="YES" attributeType="String"/>
+        <attribute name="diaryDate" optional="YES" attributeType="String"/>
+        <attribute name="diaryName" optional="YES" attributeType="String"/>
+        <attribute name="diaryTextView" optional="YES" attributeType="String"/>
+        <attribute name="equipDiveTime" optional="YES" attributeType="String"/>
+        <attribute name="equipFins" optional="YES" attributeType="String"/>
+        <attribute name="equipMask" optional="YES" attributeType="String"/>
+        <attribute name="equipMaxDeep" optional="YES" attributeType="String"/>
+        <attribute name="equipSuit" optional="YES" attributeType="String"/>
+        <attribute name="equipTemperature" optional="YES" attributeType="String"/>
+        <attribute name="equipVisibility" optional="YES" attributeType="String"/>
+        <attribute name="equipWeight" optional="YES" attributeType="String"/>
         <attribute name="hold" optional="YES" attributeType="String"/>
+        <attribute name="locationSiteLat" optional="YES" attributeType="String"/>
+        <attribute name="locationSiteLon" optional="YES" attributeType="String"/>
+        <attribute name="locationSiteName" optional="YES" attributeType="String"/>
+        <attribute name="moodEmoji" optional="YES" attributeType="String"/>
         <attribute name="reduce" optional="YES" attributeType="String"/>
         <attribute name="saveDate" optional="YES" attributeType="String"/>
         <attribute name="set" optional="YES" attributeType="String"/>
         <attribute name="tableID" attributeType="String"/>
         <attribute name="tableName" optional="YES" attributeType="String"/>
+        <attribute name="weatherLocation" optional="YES" attributeType="String"/>
+        <attribute name="weatherName" optional="YES" attributeType="String"/>
+        <attribute name="weatherTMax" optional="YES" attributeType="String"/>
+        <attribute name="weatherTMin" optional="YES" attributeType="String"/>
         <attribute name="whitchTable" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="TableData" positionX="-63" positionY="-18" width="128" height="163"/>
-        <element name="DiaryData" positionX="-63" positionY="45" width="128" height="29"/>
+        <element name="TableData" positionX="-63" positionY="-18" width="128" height="434"/>
     </elements>
 </model>
