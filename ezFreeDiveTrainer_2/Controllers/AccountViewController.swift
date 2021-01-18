@@ -15,7 +15,7 @@ class AccountViewController: UIViewController {
     @IBOutlet weak var myNameLabel: UILabel!
     @IBOutlet weak var myEmailLabel: UILabel!
     
-    var cellText = ["版本", "回報問題", "隱私政策"]
+    var cellText = ["Version", "Report", "Privacy Policy", "LogIn"]
     var version = ""
     let email = MFMailComposeViewController()
     
@@ -41,9 +41,24 @@ class AccountViewController: UIViewController {
         
         email.delegate = self
         
-        // Do any additional setup after loading the view.
+        // 新增手勢
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapClick(recognizer:)))
+        tapRecognizer.numberOfTapsRequired = 1
+        tapRecognizer.numberOfTouchesRequired = 1
+        myImageView.isUserInteractionEnabled = true
+        myImageView.addGestureRecognizer(tapRecognizer)
+
+        
     }
-    
+    // 手勢響應方法
+    @objc func tapClick(recognizer:UITapGestureRecognizer) {
+        print("Tap")
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+//        picker.sourceType = .savedPhotosAlbum
+        picker.delegate = self
+        self.present(picker, animated: true, completion: nil)
+    }
 
     /*
     // MARK: - Navigation
@@ -69,6 +84,15 @@ class AccountViewController: UIViewController {
     }
 
 }
+
+extension AccountViewController: UIImagePickerControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let image = info[.originalImage] as! UIImage
+        self.myImageView.image = image/*.resize(newSize: CGSize(width: 100, height: 100))*/
+        self.dismiss(animated: true, completion: nil)
+    }
+}
+
 extension AccountViewController: UINavigationControllerDelegate, MFMailComposeViewControllerDelegate {
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true)
@@ -82,6 +106,10 @@ extension AccountViewController: UITableViewDelegate {
             sendEmail()
         } else if indexPath.row == 2 {
             
+        } else if indexPath.row == 3 {
+            //Login
+            let vc = storyboard?.instantiateViewController(identifier: "logInVC") as! LogInViewController
+            show(vc, sender: true)
         } else {
             
         }

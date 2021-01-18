@@ -98,6 +98,13 @@ class MapViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super .viewWillDisappear(animated)
         var divesites = ""
+
+        if delegateData.count != 0 {
+            if delegateData[0].diveSiteName == "" {
+                delegateData.remove(at: 0)
+            }
+        }
+        
         for i in 0..<delegateData.count {
             divesites.append(delegateData[i].diveSiteName ?? "?")
             if i == delegateData.count - 1{ divesites.append("") } else {divesites.append(", ")}
@@ -175,9 +182,6 @@ class MapViewController: UIViewController {
         //arrayIndex
         delegateData.remove(at: arrayIndex)
         myMapView.removeAnnotation(viewannotation)
-        
-        //MARK: 給coredata接
-//        reloadDiveSitePointData(data: delegateData)
         myMapView.reloadInputViews()
         
     }
@@ -200,6 +204,7 @@ class MapViewController: UIViewController {
             newDiveSite.subtitle = String(format: "%0.4f, ", currentPosition.latitude) + String(format: "%0.4f", currentPosition.longitude)
             myMapView.addAnnotation(newDiveSite)
             isAnnotationDrag = false
+            
             //MARK: Save for trance data to diarysetVC
             let data = MapData()
             data.diveSiteName = "\(text)"
@@ -235,20 +240,6 @@ extension MapViewController: CLLocationManagerDelegate{
         print("\(regionUpdateCenter.latitude) , \(regionUpdateCenter.longitude)")
         
         //下圖釘
-        //MARK: bug 移動圖釘會focase在移動後的點上，判斷怪怪的
-//        var dragPinLocation = CLLocationCoordinate2D()
-//        if isAnnotationDrag == false {
-//            dragPinLocation = regionUpdateCenter
-//        } else {
-//            guard let dragLocation = selectedView.annotation?.coordinate else {
-//                return
-//            }
-//            dragPinLocation = dragLocation
-//            let span = MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 1)
-//            let region = MKCoordinateRegion(center: dragPinLocation, span: span)
-//            myMapView.setRegion(region, animated: true)
-//            isAnnotationDrag = false
-//        }
         if isReloadData == false {
             annotation.coordinate = regionUpdateCenter
             annotation.title = "Dive Site"

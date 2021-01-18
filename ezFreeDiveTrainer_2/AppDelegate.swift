@@ -18,6 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
         print("\(NSHomeDirectory())")
+        
+        var dic = ["isFirstOpenApp": true]
+        UserDefaults.standard.register(defaults: dic)
         return true
     }
 

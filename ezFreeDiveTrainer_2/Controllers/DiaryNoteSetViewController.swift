@@ -49,6 +49,8 @@ class DiaryNoteSetViewController: UIViewController {
     var data = [TableData]()
     var note: TableData!
     
+    var isFSChangeValueInDiarySet = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         noteName.delegate = self
@@ -85,12 +87,13 @@ class DiaryNoteSetViewController: UIViewController {
         fetchCoreData()
     }
     
-    //存coreData!!
     @IBAction func doneBtnPressedSave(_ sender: Any) {
         
         //要做delegate 傳給前面的Calender，這裡不該存coreDate!!
                 
 //        let note = TableData(context: CoreDataHelper.shared.managedObjectContext())
+        let dic = ["isFirstOpenApp": true]
+        UserDefaults.standard.register(defaults: dic)
         
         if note == nil {
             self.data[0].diaryDate = "\(DateFormatter.localizedString(from: titleDate ?? Date(), dateStyle: .medium, timeStyle: .medium))"
@@ -100,6 +103,7 @@ class DiaryNoteSetViewController: UIViewController {
             self.data[0].diaryTextView = "\(myTextView.text ?? "")"
             self.data[0].whitchTable = "Diary"
             self.delegate?.didFinishSetNote(note: self.data[0], isNotToday: true)
+            
         } else {
             note.diaryDate = "\(DateFormatter.localizedString(from: titleDate ?? Date(), dateStyle: .medium, timeStyle: .medium))"
             print("\(note.diaryDate)")
@@ -137,9 +141,9 @@ class DiaryNoteSetViewController: UIViewController {
             print("\(formatterr.date(from: note.diaryDate ?? "") != self.titleDate)")
             
             if formatterr.date(from: note.diaryDate ?? "") != self.titleDate {
-                self.delegate?.didFinishSetNote(note: note, isNotToday: false)
-            } else {
                 self.delegate?.didFinishSetNote(note: note, isNotToday: true)
+            } else {
+                self.delegate?.didFinishSetNote(note: note, isNotToday: false)
             }
             
         }
@@ -157,7 +161,6 @@ class DiaryNoteSetViewController: UIViewController {
         moc.performAndWait {
             do {
                 self.data = try moc.fetch(fetchRequest)
-                print("\(self.data)")
                 if self.data.count != 0 {reloadValue()}
             }catch {
                 self.data = []
@@ -187,28 +190,31 @@ class DiaryNoteSetViewController: UIViewController {
         equipData = equ
         
         //地點目前先做只有一筆資料
+        //11/17
         let loc = MapData()
-        loc.diveSiteLat = self.data[0].locationSiteLat
-        loc.diveSiteLon = self.data[0].locationSiteLon
-        loc.diveSiteName = self.data[0].locationSiteName
-        mapDiveSiteData.append(loc)
-//        let showALLFriendsContent = NSMutableAttributedString()
-//        if data.count == 0 {
-//            showALLFriendsContent.append(NSAttributedString(string: ""))
-//            myInfoLabelForDiveSite.attributedText = showALLFriendsContent
-//        }
-//        showALLFriendsContent.append(NSAttributedString(string: ""))
-//        myInfoLabelForDiveSite.attributedText = showALLFriendsContent
-//        updateLabelForDiveSite(label: myInfoLabelForDiveSite, diveSiteName: mapDiveSiteData[0].diveSiteName ?? "", isLastOne: true, content: showALLFriendsContent)
-//        for i in 0..<data.count {
-//            guard let name = data[i].diveSiteName else {return}
-//            if i == data.count - 1 {
-//
-//            } else {
-//                updateLabelForDiveSite(label: myInfoLabelForDiveSite, diveSiteName: name, isLastOne: false, content: showALLFriendsContent)
-//            }
-//        }
+        loc.diveSiteLat = self.data[0].locationSiteLat ?? ""
+        loc.diveSiteLon = self.data[0].locationSiteLon ?? ""
+        loc.diveSiteName = self.data[0].locationSiteName ?? ""
         
+        //第一次開app
+        if UserDefaults.standard.bool(forKey: "isFirstOpenApp") == true {
+            mapDiveSiteData.append(loc)
+            let dic = ["isFirstOpenApp": false]
+            UserDefaults.standard.register(defaults: dic)
+        } else {
+            if mapDiveSiteData.count != 0 {
+                for i in 0..<mapDiveSiteData.count {
+                    print("\(self.data[0].locationSiteName)")
+                    if mapDiveSiteData[i].diveSiteName == self.data[0].locationSiteName {
+                        //不增加
+                        break
+                    } else {
+                        //沒有重複增加
+                        mapDiveSiteData.append(loc)
+                    }
+                }
+            }
+        }
         //時間
         if let day = formatterr.date(from: "\(self.data[0].diaryDate ?? "")") {
             let dateOfTime = "\(formatterr.string(from: day))"
@@ -227,9 +233,14 @@ class DiaryNoteSetViewController: UIViewController {
             showALLFriendsContent.append(NSAttributedString(string: ""))
             myInfoLabelForDiveSite.attributedText = showALLFriendsContent
         }
-        for i in 0..<data.count {
-            guard let name = self.data[i].locationSiteName else {return}
-            if i == data.count - 1 {
+        
+        //01/18把空字串移除
+        print("\(mapDiveSiteData.count)")
+        let tempdata = mapDiveSiteData.filter { $0.diveSiteName != ""}
+        print("\(mapDiveSiteData.count)")
+        for i in 0..<tempdata.count {
+            guard let name = tempdata[i].diveSiteName else {return}
+            if i == tempdata.count - 1 {
                 updateLabelForDiveSite(label: myInfoLabelForDiveSite, diveSiteName: name, isLastOne: true, content: showALLFriendsContent)
             } else {
                 updateLabelForDiveSite(label: myInfoLabelForDiveSite, diveSiteName: name, isLastOne: false, content: showALLFriendsContent)
@@ -394,7 +405,6 @@ extension DiaryNoteSetViewController: UICollectionViewDataSource {
     }
     //定位
     @objc func loactionBtn() {
-        print("placeholderBtn")
         let mapVC = storyboard?.instantiateViewController(identifier: "mapVC") as! MapViewController
         mapVC.delegate = self
         if mapDiveSiteData[0].diveSiteName != nil {
@@ -475,21 +485,30 @@ extension DiaryNoteSetViewController: MoodViewControllerDelegate, WeatherViewCon
     }
     //潛水地點更新
     func didUpdateDiveSite(updata data: [MapData]) {
-        mapDiveSiteData = data
-        
-        //bug 目前只能存一筆資料
-        self.data[0].locationSiteName = data[0].diveSiteName
-        self.data[0].locationSiteLat = data[0].diveSiteLat
-        self.data[0].locationSiteLon = data[0].diveSiteLon
-        
+//        mapDiveSiteData = data
+//
+//        //bug 目前只能存一筆資料
+//        self.data[0].locationSiteName = data[0].diveSiteName
+//        self.data[0].locationSiteLat = data[0].diveSiteLat
+//        self.data[0].locationSiteLon = data[0].diveSiteLon
+        //更新完沒data?!
+        if data.count != 0 {
+            mapDiveSiteData = data
+            self.data[0].locationSiteName = data[0].diveSiteName
+            self.data[0].locationSiteLat = data[0].diveSiteLat
+            self.data[0].locationSiteLon = data[0].diveSiteLon
+        }
         
         let showALLFriendsContent = NSMutableAttributedString()
         if data.count == 0 {
             showALLFriendsContent.append(NSAttributedString(string: ""))
             myInfoLabelForDiveSite.attributedText = showALLFriendsContent
         }
-        for i in 0..<data.count {
-            guard let name = data[i].diveSiteName else {return}
+        
+        //01/18把空字串移除
+        let tempdata = data.filter { $0.diveSiteName != "" }
+        for i in 0..<tempdata.count {
+            guard let name = tempdata[i].diveSiteName else {return}
             if i == data.count - 1 {
                 updateLabelForDiveSite(label: myInfoLabelForDiveSite, diveSiteName: name, isLastOne: true, content: showALLFriendsContent)
             } else {
@@ -508,6 +527,10 @@ extension DiaryNoteSetViewController: UITextFieldDelegate, UITextViewDelegate {
     func textFieldDidEndEditing(_ textField: UITextField) {
         noteName.text = textField.text ?? ""
         self.data[0].diaryName = "\(noteName.text ?? "")"
+    }
+    func textViewDidEndEditing(_ textView: UITextView) {
+        myTextView.text = textView.text ?? ""
+        self.data[0].diaryTextView = "\(myTextView.text ?? "")"
     }
     
 }

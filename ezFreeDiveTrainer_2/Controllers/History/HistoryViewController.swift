@@ -20,7 +20,7 @@ class HistoryViewController: UIViewController {
 //    var showData = [Int: [(TimelinePoint, UIColor, String, String, String?, [String]?, String?)]]()
     let formatterr: DateFormatter = {
        let foramtter = DateFormatter()
-//        foramtter.timeStyle = .long
+        foramtter.timeStyle = .long
         foramtter.dateStyle = .medium
         return foramtter
     }()
@@ -129,7 +129,14 @@ extension HistoryViewController: UITableViewDelegate {
         } else {
             let vc = storyboard?.instantiateViewController(identifier: "diaryNoteVC") as! DiaryNoteSetViewController
             vc.uuid = self.diaryData[indexPath.row].tableID
-            vc.titleDate = formatterr.date(from: self.diaryData[indexPath.row].diaryDate ?? "")
+            
+            // Create Date Formatter
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .medium
+            dateFormatter.timeStyle = .medium
+            guard let stringDate = self.diaryData[indexPath.row].diaryDate else {return}
+            
+            vc.titleDate = dateFormatter.date(from: stringDate)
             vc.note = self.diaryData[indexPath.row]
             vc.delegate = self
             show(vc, sender: nil)
@@ -173,11 +180,10 @@ extension HistoryViewController: UITableViewDataSource {
 
         
         if indexPath.section == 0 {
-            guard let breath = self.data[indexPath.row].breath,
-                  let hold = self.data[indexPath.row].hold,
-                  let set = self.data[indexPath.row].set else {
-                return cell
-            }
+            let breath = self.data[indexPath.row].breath ?? ""
+            let hold = self.data[indexPath.row].hold ?? ""
+            let set = self.data[indexPath.row].set ?? ""
+            
             cell.titleLabel.text = self.data[indexPath.row].tableName
             cell.descriptionLabel.text = "BreathTime: \(breath), HoldTime: \(hold), Set: \(set)"
             if indexPath.row == 0 {
@@ -193,16 +199,16 @@ extension HistoryViewController: UITableViewDataSource {
                 cell.timeline.backColor = UIColor.black
                 cell.timeline.frontColor = UIColor.black
             }
+            return cell
             
-        } else {
-            guard let diaryName = self.diaryData[indexPath.row].diaryName,
-                  let weater = self.diaryData[indexPath.row].weatherName,
-                  let weaterLocation = self.diaryData[indexPath.row].weatherLocation,
-                  let moodImage = self.diaryData[indexPath.row].moodEmoji,
-                  let tMax = self.diaryData[indexPath.row].weatherTMax,
-                  let tMin = self.diaryData[indexPath.row].weatherTMin else {
-                return cell
-            }
+        } else if indexPath.section == 1{
+        
+            let weaterLocation = self.diaryData[indexPath.row].weatherLocation ?? ""
+            let moodImage = self.diaryData[indexPath.row].moodEmoji ?? ""
+            let tMax = self.diaryData[indexPath.row].weatherTMax ?? ""
+            let tMin = self.diaryData[indexPath.row].weatherTMin ?? ""
+            let weater = self.diaryData[indexPath.row].weatherName ?? ""
+            
             var weaImage = ""
             switch weater {
             case "晴":
@@ -212,11 +218,11 @@ extension HistoryViewController: UITableViewDataSource {
             case "陰":
                 weaImage = "cloud"
             default:
-                weaImage = "rain"
+                weaImage = ""
             }
             
-            cell.titleLabel.text = diaryName
-            cell.illustrationImageView.image = UIImage(named: weaImage)
+            cell.titleLabel.text = self.diaryData[indexPath.row].diaryName ?? ""
+            if weaImage != "" {cell.illustrationImageView.image = UIImage(named: weaImage)}
             cell.illustrationSize.constant = 20
             cell.descriptionLabel.attributedText = updateLabelForThings(location: weaterLocation, temMax: tMax, temMin: tMin, moodemoji: moodImage)
             
@@ -230,62 +236,13 @@ extension HistoryViewController: UITableViewDataSource {
                 cell.timeline.backColor = UIColor.black
                 cell.timeline.frontColor = UIColor.black
             }
+            return cell
             
+        } else {
+            return cell
         }
-        return cell
         
-//        switch indexPath.section {
-//        case 0:
-//            guard let breath = self.data[indexPath.row].breath,
-//                  let hold = self.data[indexPath.row].hold,
-//                  let set = self.data[indexPath.row].set else {
-//                return cell
-//            }
-//            cell.titleLabel.text = self.data[indexPath.row].tableName
-//            cell.descriptionLabel.text = "BreathTime: \(breath), HoldTime: \(hold), Set: \(set)"
-//            if indexPath.row == 0 {
-//                cell.illustrationImageView.image = UIImage(named: "wallclock")
-//                cell.illustrationSize.constant = 20
-//                cell.viewsInStackView = [UIImageView(image: UIImage(named: "wallclock"))]
-//            }
-//            return cell
-//        case 1:
-//            guard let diaryName = self.diaryData[indexPath.row].diaryName,
-//                  let weater = self.diaryData[indexPath.row].weatherName,
-//                  let weaterLocation = self.diaryData[indexPath.row].weatherLocation,
-//                  let moodImage = self.diaryData[indexPath.row].moodEmoji,
-//                  let tMax = self.diaryData[indexPath.row].weatherTMax,
-//                  let tMin = self.diaryData[indexPath.row].weatherTMin else {
-//                return cell
-//            }
-//            var weaImage = ""
-//            switch weater {
-//            case "晴":
-//                weaImage = "sun"
-//            case "多雲":
-//                weaImage = "cloudy"
-//            case "陰":
-//                weaImage = "cloud"
-//            default:
-//                weaImage = "rain"
-//            }
-//
-//            cell.titleLabel.text = diaryName
-//            cell.illustrationImageView.image = UIImage(named: weaImage)
-//            cell.illustrationSize.constant = 20
-//            cell.descriptionLabel.attributedText = updateLabelForThings(location: weaterLocation, temMax: tMax, temMin: tMin, moodemoji: moodImage)
-//            return cell
-//        default:
-//            return cell
-//        }
-        
-        
-        // TimelinePoint, Timeline back color, title, description, lineInfo, thumbnails, illustration
-//        let data:[Int: [(TimelinePoint, UIColor, String, String, String?, [String]?, String?)]] = [0:[
-//                (TimelinePoint(), UIColor.black, "12:30", "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", nil, nil, "Sun")
-
     }
-    
     
 }
 

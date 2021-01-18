@@ -7,6 +7,8 @@
 
 import UIKit
 import CoreData
+import SCLAlertView
+import AVFoundation
 
 class RTCounterViewController: UIViewController {
 
@@ -72,6 +74,23 @@ class RTCounterViewController: UIViewController {
             holdArrayCounter = 0
             breathArrayCounter = 0
             print("over")
+            let appearance = SCLAlertView.SCLAppearance(
+                kCircleIconHeight: 30,
+                kTitleFont: UIFont(name: "Chalkboard SE Regular", size: 22)!,
+                kTextFont: UIFont(name: "Chalkboard SE Regular", size: 12)!,
+                kButtonFont: UIFont(name: "Chalkboard SE Regular", size: 14)!,
+                contentViewCornerRadius: 20
+            )
+            
+            let alertView = SCLAlertView(appearance: appearance)
+            alertView.view.backgroundColor = UIColor.clear
+            alertView.showSuccess("Awesome! You made it!!", subTitle: "Finish", circleIconImage: #imageLiteral(resourceName: "wave"))
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+            // create a sound ID, in this case its the tweet sound.
+            let systemSoundID: SystemSoundID = 1004
+
+            // to play sound
+            AudioServicesPlaySystemSound (systemSoundID)
         }
     }
     

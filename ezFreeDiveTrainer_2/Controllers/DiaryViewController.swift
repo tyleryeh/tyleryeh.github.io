@@ -16,6 +16,7 @@ class DiaryViewController: UIViewController {
     
     var data = [TableData]()
     var showDayData = [TableData]()
+    var isFSChangeValue = false
     
     let formatterr: DateFormatter = {
        let foramtter = DateFormatter()
@@ -71,40 +72,25 @@ class DiaryViewController: UIViewController {
     
     // MARK: - Navigation
     // In a storyboard-based application, you will often want to do a little preparation before navigation
+    //addPressed
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "addNote" {
 //            print("\(showDayData)")
 //            print("\(showDayData == nil)")
 //            print("\(showDayData != nil)")
-            
+            let dic = ["isFirstOpenApp": true]
+            UserDefaults.standard.register(defaults: dic)
             let vc = segue.destination as! DiaryNoteSetViewController
-            vc.titleDate = selectedDay
+            let note = TableData(context: CoreDataHelper.shared.managedObjectContext())
+            CoreDataHelper.shared.saveContext()
             vc.delegate = self
-            
-            if showDayData.count == 0 {
-                //創一個有uuid的物件給他接
-                let note = TableData(context: CoreDataHelper.shared.managedObjectContext())
-                CoreDataHelper.shared.saveContext()
-                vc.uuid = note.tableID
+            vc.uuid = note.tableID
+            if isFSChangeValue == true {
+                vc.titleDate = selectedDay
+                isFSChangeValue = false
             } else {
-//                轉換index
-                var tranceFerIndex = -1
-                guard let indexx = myTableView.indexPathForSelectedRow else {return}
-                for i in 0..<self.data.count {
-                    if showDayData[indexx.row].tableID == self.data[i].tableID {
-                        tranceFerIndex = i
-                        break
-                    }
-                }
-                vc.uuid = self.data[tranceFerIndex].tableID
+                vc.titleDate = Date()
             }
-            
-            
-            
-            
-//            vc.uuid = self.data[tranceFerIndex].tableID
-//            vc.data = self.data
-            //傳id過去就好了
             
         }
     }
@@ -113,28 +99,12 @@ class DiaryViewController: UIViewController {
 }
 
 extension DiaryViewController: FSCalendarDelegate{
-//    func calendar(_ calendar: FSCalendar, appearance: FSCalendarAppearance, titleDefaultColorFor date: Date) -> UIColor? {
-//
-//            let defaultColor = appearance.titleDefaultColor
-//
-//            if #available(iOS 12.0, *) {
-//                if self.traitCollection.userInterfaceStyle == .dark {
-//                    return .orange
-//                } else {
-//                    return defaultColor
-//                }
-//            } else {
-//                return defaultColor
-//            }
-//        }
-    
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
+        isFSChangeValue = true
         selectedDay = date
         showDayData = dayFilter(data: self.data, selectDate: date)
         myTableView.reloadData()
-        
     }
-    
 
     func dayFilter(data: [TableData], selectDate: Date) -> [TableData]{
         var strings = [String]()
@@ -176,12 +146,15 @@ extension DiaryViewController: DiaryNoteSetViewControllerDelegate{
         if isNotToday == true { //not today
             self.data.append(note)
         } else { //today
-            if let index = self.data.firstIndex(of: note){
-                let indexPath = IndexPath(row: index, section: 0)
-                self.myTableView.reloadRows(at: [indexPath], with: .automatic)
-            }
+            //data 是全部的日記，要跟showdata分開
+            //處理model 再處理view
+//            if let index = self.data.firstIndex(of: note){
+//                let indexPath = IndexPath(row: index, section: 0)
+//                self.myTableView.reloadRows(at: [indexPath], with: .automatic)
+//            }
         }
         CoreDataHelper.shared.saveContext()
+        self.myTableView.reloadData()
     }
     
 }
@@ -198,7 +171,6 @@ extension DiaryViewController: UITableViewDelegate {
                 break
             }
         }
-        
         //點到cell跳轉畫面，帶uuid過去
         let vc = storyboard?.instantiateViewController(identifier: "diaryNoteVC") as! DiaryNoteSetViewController
         vc.delegate = self
