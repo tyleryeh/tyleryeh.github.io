@@ -12,10 +12,16 @@ import GTMSessionFetcher
 import FBSDKCoreKit
 import FBSDKLoginKit
 import FBSDKShareKit
+import AuthenticationServices
 
 //let clientID = "183366530677-6pg0g8496n2027g3dkd38ij2vplpk284.apps.googleusercontent.com"
 //let clientID = "488237529686-mfvarsr47dfjkskllsjfc6u1982imml2.apps.googleusercontent.com"
 let clientID = "433968265446-vrr65td107hqh9224bl80n0jj68e6llo.apps.googleusercontent.com"
+
+protocol LogInViewControllerDelegate: class {
+    func fbDidLogIn(email: String)
+    func appleDidLonIn(name: String, email: String)
+}
 
 class LogInViewController: UIViewController {
     
@@ -25,13 +31,14 @@ class LogInViewController: UIViewController {
     var fbmail: String = ""
     var fbBD: String = ""
     
-    
+    var delegate: LogInViewControllerDelegate?
 
     @IBOutlet weak var facebookSignIn: FBLoginButton!
+    @IBOutlet weak var googleLogin: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.view.backgroundColor = UIColor(patternImage: #imageLiteral(resourceName: "077ColdEvening"))
         //Prepare for Google SignIn
         googleSignIn?.delegate = self
         //kGTLRAuthScopeDriveFile: 只有app上傳的才看得到
@@ -66,13 +73,11 @@ class LogInViewController: UIViewController {
             let request = GraphRequest(graphPath: "me",
                                        parameters: ["fields":"birthday,email"])
             request.start { (connect, result, error) in
-                print(result)
                 let info = result as! Dictionary<String,AnyObject>
                 if let email = info["email"] {
-//                    self.mailLabel.text = "\(email)"
-//                    let a = String(describing: email)
-                    self.fbname = String(describing: email)
-//                    print("aaaaaaaaaaaa: \(a)")
+                    self.fbmail = String(describing: email)
+                    SubFunctions.shared.userEmail = String(describing: email)
+                    self.delegate?.fbDidLogIn(email: self.fbmail)
                 }
                 if let birthday = info["birthday"] {
                     print("\(birthday)")
@@ -81,6 +86,19 @@ class LogInViewController: UIViewController {
             }
         }
     }
+    //Apple Sing In
+    @IBAction func appleSingIn(_ sender: Any) {
+        let provider = ASAuthorizationAppleIDProvider()
+        let request = provider.createRequest()
+        request.requestedScopes = [.fullName, .email]
+        
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+        controller.delegate = self
+        controller.presentationContextProvider = self
+        controller.performRequests()
+        
+    }
+    
     
     @IBAction func googleSignBtn(_ sender: Any) {
         guard let canAuthorize = googleSignIn?.currentUser?.authentication?.fetcherAuthorizer()?.canAuthorize else {
@@ -116,10 +134,38 @@ class LogInViewController: UIViewController {
     */
 
 }
+extension LogInViewController: ASAuthorizationControllerDelegate {
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        print("failed!")
+    }
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        switch authorization.credential {
+        case let credentials as ASAuthorizationAppleIDCredential:
+            if let firstName = credentials.fullName?.givenName,
+               let lastName = credentials.fullName?.familyName,
+               let userEmail = credentials.email {
+                let name = lastName + firstName
+                self.delegate?.appleDidLonIn(name: name, email: String(describing: userEmail))
+            } else {
+                print("TrainsError!")
+            }
+            break
+        default:
+            break
+        }
+    }
+}
+extension LogInViewController: ASAuthorizationControllerPresentationContextProviding {
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return view.window!
+    }
+    
+    
+    
+}
 
 extension LogInViewController: LoginButtonDelegate {
     func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
-        
     }
     
     func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
@@ -135,7 +181,6 @@ extension LogInViewController: LoginButtonDelegate {
 }
 
 extension LogInViewController: GIDSignInDelegate {
-    
     
     func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error!) {
         if let error = error{

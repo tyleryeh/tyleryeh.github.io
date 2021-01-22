@@ -16,6 +16,9 @@ class SubFunctions {
         
     }
     
+    var userEmail = ""
+    var userName = ""
+    
     func intToStringForTimeFormatter(input: Int) -> String{
         let min = input / 60 % 60
         let sec = input % 60

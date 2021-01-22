@@ -129,16 +129,21 @@ extension HistoryViewController: UITableViewDelegate {
         } else {
             let vc = storyboard?.instantiateViewController(identifier: "diaryNoteVC") as! DiaryNoteSetViewController
             vc.uuid = self.diaryData[indexPath.row].tableID
-            
+            vc.note = self.diaryData[indexPath.row]
+            vc.delegate = self
+//            let mapData = MapData()
+//            mapData.diveSiteName = self.diaryData[indexPath.row].locationSiteName
+//            mapData.diveSiteLat = self.diaryData[indexPath.row].locationSiteLat
+//            mapData.diveSiteLon = self.diaryData[indexPath.row].locationSiteLon
+//            vc.mapDiveSiteData = []
+//            vc.mapDiveSiteData.append(mapData)
             // Create Date Formatter
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .medium
             dateFormatter.timeStyle = .medium
             guard let stringDate = self.diaryData[indexPath.row].diaryDate else {return}
-            
             vc.titleDate = dateFormatter.date(from: stringDate)
-            vc.note = self.diaryData[indexPath.row]
-            vc.delegate = self
+            
             show(vc, sender: nil)
         }
         

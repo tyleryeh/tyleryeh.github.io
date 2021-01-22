@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
         print("\(NSHomeDirectory())")
         
-        var dic = ["isFirstOpenApp": true]
+        let dic = ["isFirstOpenApp": true]
         UserDefaults.standard.register(defaults: dic)
         return true
     }

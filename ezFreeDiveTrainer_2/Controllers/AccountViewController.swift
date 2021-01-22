@@ -7,6 +7,9 @@
 
 import UIKit
 import MessageUI
+import FBSDKCoreKit
+import FBSDKLoginKit
+import FBSDKShareKit
 
 class AccountViewController: UIViewController {
 
@@ -47,8 +50,15 @@ class AccountViewController: UIViewController {
         tapRecognizer.numberOfTouchesRequired = 1
         myImageView.isUserInteractionEnabled = true
         myImageView.addGestureRecognizer(tapRecognizer)
-
         
+        //登入後通知
+        NotificationCenter.default.addObserver(self, selector: #selector(updataProfile), name: .ProfileDidChange, object: nil)
+        
+    }
+    @objc func updataProfile() {
+        if let profile = Profile.current{
+            self.myNameLabel.text = profile.name
+        }
     }
     // 手勢響應方法
     @objc func tapClick(recognizer:UITapGestureRecognizer) {
@@ -85,6 +95,18 @@ class AccountViewController: UIViewController {
 
 }
 
+extension AccountViewController: LogInViewControllerDelegate {
+    func appleDidLonIn(name: String, email: String) {
+        self.myEmailLabel.text = email
+        self.myNameLabel.text = name
+    }
+    
+    func fbDidLogIn(email: String) {
+        self.myEmailLabel.text = email
+    }
+    
+}
+
 extension AccountViewController: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[.originalImage] as! UIImage
@@ -109,6 +131,7 @@ extension AccountViewController: UITableViewDelegate {
         } else if indexPath.row == 3 {
             //Login
             let vc = storyboard?.instantiateViewController(identifier: "logInVC") as! LogInViewController
+            vc.delegate = self
             show(vc, sender: true)
         } else {
             

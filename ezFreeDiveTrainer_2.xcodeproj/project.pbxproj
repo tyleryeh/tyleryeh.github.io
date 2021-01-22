@@ -77,6 +77,7 @@
 		2F202A2525A551CB0093CD73 /* MoodViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodViewController.swift; sourceTree = "<group>"; };
 		2F202A2925A55CBC0093CD73 /* MoodViewCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoodViewCollectionViewCell.swift; sourceTree = "<group>"; };
 		2F2346162599CD8500A6B5AB /* ReduceTimeCellTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduceTimeCellTableViewCell.swift; sourceTree = "<group>"; };
+		2F24285325BAE57400739EA6 /* ezFreeDiveTrainer_2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ezFreeDiveTrainer_2.entitlements; sourceTree = "<group>"; };
 		2F2D15062594B3FA00CE6522 /* ReduceTimeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduceTimeViewController.swift; sourceTree = "<group>"; };
 		2F2D150A2594B9F800CE6522 /* ReduceTimeBreathViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReduceTimeBreathViewController.swift; sourceTree = "<group>"; };
 		2F2D15112595774D00CE6522 /* ColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
@@ -256,6 +257,7 @@
 		2F435DC8258C4A8B00AB02B8 /* ezFreeDiveTrainer_2 */ = {
 			isa = PBXGroup;
 			children = (
+				2F24285325BAE57400739EA6 /* ezFreeDiveTrainer_2.entitlements */,
 				2F435DC9258C4A8B00AB02B8 /* AppDelegate.swift */,
 				2F435DCB258C4A8B00AB02B8 /* SceneDelegate.swift */,
 				2F435DCD258C4A8B00AB02B8 /* ViewController.swift */,
@@ -715,6 +717,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ezFreeDiveTrainer_2/ezFreeDiveTrainer_2.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 97QUS33ART;
 				INFOPLIST_FILE = ezFreeDiveTrainer_2/Info.plist;
@@ -736,6 +739,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ezFreeDiveTrainer_2/ezFreeDiveTrainer_2.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 97QUS33ART;
 				INFOPLIST_FILE = ezFreeDiveTrainer_2/Info.plist;
